@@ -5,7 +5,7 @@
             {
                 "sensor_name": "temp",
                 "sensor_type": "int",
-                "sensor_type_byte": 1
+                "sensor_id": 1
             }
         ]
     }

@@ -18,7 +18,7 @@ def udp_to_mqtt(data, devices):
         for sensor in device.get('sensors', []):
             if sensor['sensor_id'] == id:
                 topic = '{}/{}'.format(device['device_name'], sensor['sensor_name'])
-                return topic, sensor_data
+                return (topic, '%d' % sensor_data)
 
     raise SensorNotFound()
 
@@ -41,12 +41,13 @@ class SensorFloProtocol(asyncio.DatagramProtocol):
         self.transport = transport
 
     def datagram_received(self, data, addr):
-        log.debug("Received datagram '{}' from host {}.".format(
-            str(data.decode()),
+        log.debug("Received datagram {} from host {}.".format(
+            str(repr(data)),
             addr
         ))
         # TODO: Decode Data
 
         if self.queue != None:
             topic, message = udp_to_mqtt(data, self.devices)
-            asyncio.ensure_future( self.queue.put() )
+            log.debug("Enqueue '{}' on topic {}.".format(message, topic))
+            asyncio.ensure_future( self.queue.put((topic, message)) )

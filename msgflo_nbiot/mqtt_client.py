@@ -29,7 +29,8 @@ class AsyncMQTT(object):
             try:
                 topic, message = self.queue.get_nowait()
                 log.debug("Sending mqtt {}".format(message))
-                await self.C.publish(topic, message.encode(), qos=0x00, retain=True)
+                msg_array = bytearray(message.encode('utf-8'))
+                await self.C.publish(topic, msg_array, qos=0x00, retain=True)
             except asyncio.QueueEmpty:
                 pass
             if self.queue.empty():

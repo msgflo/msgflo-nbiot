@@ -34,7 +34,7 @@ def main():
     udp_protocol.set_queue(queue)
     udp_protocol.set_devices(devices)
 
-    mqtt_server = 'iot.eclipse.org'
+    mqtt_server = 'ansi.23-5.eu'
     async_mqtt = AsyncMQTT(queue)
     asyncio.ensure_future(async_mqtt.mqtt_loop(loop, mqtt_server))
 
