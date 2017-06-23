@@ -33,3 +33,5 @@ def test_discovery_json(devices_json):
     assert msg['protocol'] == 'discovery'
     assert msg['payload']['outports'][0]['queue'] == 'EVA1/temp'
     assert msg['payload']['outports'][0]['type'] == 'int'
+
+

@@ -4,7 +4,8 @@
         "sensors": [
             {
                 "sensor_name": "temp",
-                "sensor_type": "int"
+                "sensor_type": "int",
+                "sensor_type_byte": 1
             }
         ]
     }

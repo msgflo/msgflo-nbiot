@@ -27,10 +27,12 @@ def main():
     log.info('Selected {} as the current mqtt client id.'.format(mqtt_client_id))
 
     loop = asyncio.get_event_loop()
-    udp_listen = loop.create_datagram_endpoint(SensorFloProtocol, local_addr=('0.0.0.0', 9000))
+    udp_listen = loop.create_datagram_endpoint(SensorFloProtocol, local_addr=('0.0.0.0', 16666))
     udp_transport, udp_protocol = loop.run_until_complete(udp_listen)
 
+    devices = json.load(open(os.path.join(PROJECT_ROOT, 'sensors.json')))
     udp_protocol.set_queue(queue)
+    udp_protocol.set_devices(devices)
 
     mqtt_server = 'iot.eclipse.org'
     async_mqtt = AsyncMQTT(queue)
