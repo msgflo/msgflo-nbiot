@@ -1,0 +1,11 @@
+[
+    {
+        "device_name": "EVA1",
+        "sensors": [
+            {
+                "sensor_name": "temp",
+                "sensor_type": "int"
+            }
+        ]
+    }
+]
