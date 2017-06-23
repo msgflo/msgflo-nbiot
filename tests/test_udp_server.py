@@ -18,6 +18,11 @@ def test_json():
                     "sensor_name": "temp",
                     "sensor_type": "int",
                     "sensor_id": 1,
+                },
+                {
+                    "sensor_name": "hum",
+                    "sensor_type": "int",
+                    "sensor_id": 2,
                 }
             ]
         }
@@ -25,5 +30,8 @@ def test_json():
 
 
 def test_udp_to_mqtt(test_json):
-    test_data = b'\x01\x01\x00\x00\x00'
-    assert udp_to_mqtt(test_data, test_json) == ('EVA1/temp', 1)
+    test_data = b'\x01\xa0\xa1\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9'
+    res = list(udp_to_mqtt(test_data, test_json))
+    assert res[0] == ('EVA1/temp', '160')
+    assert res[1] == ('EVA1/hum', '161')
+

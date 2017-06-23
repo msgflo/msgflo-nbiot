@@ -13,14 +13,13 @@ class SensorNotFound(Exception):
 def udp_to_mqtt(data, devices):
     arr = bytearray(data)
     id = arr[0]
-    sensor_data = arr[1]
-    for device in devices:
-        for sensor in device.get('sensors', []):
-            if sensor['sensor_id'] == id:
-                topic = '{}/{}'.format(device['device_name'], sensor['sensor_name'])
-                return (topic, '%d' % sensor_data)
-
-    raise SensorNotFound()
+    for index in range(1, 11):
+        sensor_data = arr[index]
+        for device in devices:
+            for sensor in device.get('sensors', []):
+                if sensor['sensor_id'] == index:
+                    topic = '{}/{}'.format(device['device_name'], sensor['sensor_name'])
+                    yield (topic, '%d' % sensor_data)
 
 
 class SensorFloProtocol(asyncio.DatagramProtocol):
@@ -48,6 +47,7 @@ class SensorFloProtocol(asyncio.DatagramProtocol):
         # TODO: Decode Data
 
         if self.queue != None:
-            topic, message = udp_to_mqtt(data, self.devices)
-            log.debug("Enqueue '{}' on topic {}.".format(message, topic))
-            asyncio.ensure_future( self.queue.put((topic, message)) )
+            datagrams = list(udp_to_mqtt(data, self.devices))
+            for topic, message in datagrams:
+                log.debug("Enqueue '{}' on topic {}.".format(message, topic))
+                asyncio.ensure_future( self.queue.put((topic, message)) )

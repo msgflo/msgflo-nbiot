@@ -3,9 +3,24 @@
         "device_name": "EVA1",
         "sensors": [
             {
+              "sensor_name": "lum",
+              "sensor_type": "int",
+              "sensor_id": 1
+            },
+            {
                 "sensor_name": "temp",
                 "sensor_type": "int",
-                "sensor_id": 1
+                "sensor_id": 2
+            },
+            {
+                "sensor_name": "hall",
+                "sensor_type": "int",
+                "sensor_id": 3
+            },
+            {
+                "sensor_name": "cnt",
+                "sensor_type": "int",
+                "sensor_id": 4
             }
         ]
     }
