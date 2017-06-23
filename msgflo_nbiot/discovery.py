@@ -21,20 +21,13 @@ def device_discovery_msg(device_desc, client_id):
         "command": "participant",
         "protocol": "discovery",
         "payload": {
-            "component": "c-base/music-player",
-            "label": "c-base music player",
-            "inports": [
-            #     {
-            #         "queue": "%s/open" % mqtt_client_name,
-            #         "type": "string",
-            #         "description": "URL to be opened",
-            #         "id": "open",
-            #     }
-            ],
+            "component": "c-base/eva",
+            "label": "{}".format(device_name),
+            "inports": [],
             "outports": outports,
             "role": "{}".format(device_name),
             "id": '{}'.format(client_id),
-            "icon": "music"
+            "icon": "rocket"
         },
     }
     return discovery_message

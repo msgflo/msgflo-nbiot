@@ -1,31 +1,39 @@
 import json
 import logging
 import asyncio
+import datetime
 from hbmqtt.client import MQTTClient, ConnectException
 from hbmqtt.mqtt.constants import *
+from discovery import device_discovery_msg
 
 log = logging.getLogger(__name__)
 
 
 class AsyncMQTT(object):
-    def __init__(self, queue):
+    def __init__(self, queue, devices):
         self.C = None
         self.queue = queue
+        self.devices = devices
+        self.last_discovery = datetime.datetime.now() - datetime.timedelta(seconds=11)
 
     async def update_mqtt(self):
-        await self.C.publish('dmx-mainhall/current_state', json.dumps( {'data': "bla"} ).encode('utf-8'), qos=0x00, retain=True)
+        await self.C.publish('dmx-mainhall/current_state',
+                             json.dumps( {'data': "bla"} ).encode('utf-8'),
+                             qos=0x00, retain=True)
 
-    async def mqtt_loop(self, loop, mqtt_server):
-        self.C = MQTTClient()
+    async def mqtt_loop(self, loop, mqtt_server, client_id):
         url = "mqtt://{}:{}/".format(mqtt_server, 1883)
         log.debug("Connecting to MQTT server '{}'".format(url))
+        self.C = MQTTClient(client_id=client_id)
         await self.C.connect(url)
-        #await self.C.publish('dmx-mainhall/fixtures', fix, qos=0x00, retain=True)
-        #await self.C.publish('dmx-mainhall/current_state', json.dumps(channel_state.as_list()).encode('utf-8'), qos=0x00, retain=True)
-        # await self.C.subscribe([ ('dmx-mainhall/state', QOS_1), ])
-        i = 0
+
+        # Do the loop
         while loop.is_running():
-            i += 1
+            if (datetime.datetime.now() - self.last_discovery).seconds > 10:
+                self.last_discovery = datetime.datetime.now()
+                for device in self.devices:
+                    msg = bytearray(json.dumps(device_discovery_msg(device, client_id)).encode('utf-8'))
+                    await self.C.publish('fbp', msg, qos=0x00, retain=True)
             try:
                 topic, message = self.queue.get_nowait()
                 log.debug("Sending mqtt {}".format(message))
@@ -35,18 +43,3 @@ class AsyncMQTT(object):
                 pass
             if self.queue.empty():
                 await asyncio.sleep(0.5)
-
-            #log.debug("%d: %s => %s" % (i, packet.variable_header.topic_name, str(packet.payload.data)))
-            #topic = packet.variable_header.topic_name
-            #if topic == 'dmx-mainhall/state':
-            #    decoded = None
-            #    try:
-            #        decoded = json.loads(packet.payload.data)
-            #    except:
-            #        pass
-            #    if decoded is not None and isinstance(decoded, list):
-            #        channel_state.update_channels(decoded)
-            #    else:
-            #        log.warning("Something went wrong deserializing the string '%s'" % packet.payload.data)
-            #else:
-            #    log.info("Got unknown topic '%s'" % topic)

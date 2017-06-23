@@ -23,7 +23,7 @@ PROJECT_ROOT = os.path.join(os.path.dirname(__file__), '..')
 
 def main():
     queue = asyncio.Queue()
-    mqtt_client_id = uuid.uuid1()
+    mqtt_client_id = str(uuid.uuid1())
     log.info('Selected {} as the current mqtt client id.'.format(mqtt_client_id))
 
     loop = asyncio.get_event_loop()
@@ -35,8 +35,8 @@ def main():
     udp_protocol.set_devices(devices)
 
     mqtt_server = 'ansi.23-5.eu'
-    async_mqtt = AsyncMQTT(queue)
-    asyncio.ensure_future(async_mqtt.mqtt_loop(loop, mqtt_server))
+    async_mqtt = AsyncMQTT(queue, devices)
+    asyncio.ensure_future(async_mqtt.mqtt_loop(loop, mqtt_server, mqtt_client_id))
 
     try:
         log.info('Starting main loop ...')
