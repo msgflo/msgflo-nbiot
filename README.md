@@ -1,4 +1,4 @@
-# msgflo-nbiot
+# msgflo-nbiot [![Build Status](https://travis-ci.org/msgflo/msgflo-nbiot.svg?branch=master)](https://travis-ci.org/msgflo/msgflo-nbiot)
 Narrowband IoT gateway for MsgFlo
 
 ## How to run the tests
